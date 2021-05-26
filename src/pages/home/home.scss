@@ -181,15 +181,16 @@
         background-color: #fff;
       }
       .input {
+        margin-top: 20px;
         .label {
+          color: #fff;
+        }
+        input {
           color: #fff;
         }
       }
       .input::before {
         background: #fff;
-      }
-      .input {
-        margin-top: 20px;
       }
       .button {
         margin: 40px 0 0;
