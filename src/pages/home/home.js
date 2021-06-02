@@ -1,20 +1,42 @@
 /*
  * @Author: shaoqing
  * @Date: 2021-05-24 10:33:43
- * @LastEditTime: 2021-05-26 17:57:20
+ * @LastEditTime: 2021-06-02 17:55:17
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \react-blog-admin\src\pages\login\login.js
  */
 import React, { Component } from 'react'
-import { login } from '../../api/api'
+import { postLogin, postRegister } from '../../api/api'
+import CryptoJs from 'crypto-js'
 import './home.scss'
 
 class Home extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      focusStatus: [false, false, false, false, false],
+      inputArr: [
+        {
+          value: '',
+          focus: false
+        },
+        {
+          value: '',
+          focus: false
+        },
+        {
+          value: '',
+          focus: false
+        },
+        {
+          value: '',
+          focus: false
+        },
+        {
+          value: '',
+          focus: false
+        }
+      ],
       isRegister: false,
       isAdd: false
     }
@@ -27,17 +49,32 @@ class Home extends Component {
   renderInput = (label, index, isPassword) => {
     return (
       <div className="input">
-        <label className={`${this.state.focusStatus[index] ? 'label active' : 'label'}`}>{label}</label>
+        <label className={`${this.state.inputArr[index].focus ? 'label active' : 'label'}`}>{label}</label>
         <input
           type={isPassword ? 'password' : 'text'}
           autoComplete="false"
           onFocus={this.handleInputFocus}
           onBlur={this.handleInputBlur}
+          onChange={(e) => {
+            this.handleInputChange(index, e)
+          }}
           data-id={index}
         ></input>
-        <span className={`${this.state.focusStatus[index] ? 'progress active' : 'progress'}`}></span>
+        <span className={`${this.state.inputArr[index].focus ? 'progress active' : 'progress'}`}></span>
       </div>
     )
+  }
+  /**
+   * @description: 处理Input Change事件
+   * @param {*} e
+   * @return {*}
+   */
+  handleInputChange = (index, e) => {
+    let inputArr = this.state.inputArr
+    inputArr[index].value = e.target.value
+    this.setState({
+      inputArr: inputArr
+    })
   }
   /**
    * @description: 处理input聚焦事件
@@ -46,10 +83,10 @@ class Home extends Component {
    */
   handleInputFocus = (e) => {
     const id = e.target.dataset.id
-    let focusStatus = this.state.focusStatus
-    focusStatus[id] = true
+    let inputArr = this.state.inputArr
+    inputArr[id].focus = true
     this.setState({
-      focusStatus: focusStatus
+      inputArr: inputArr
     })
   }
   /**
@@ -61,11 +98,25 @@ class Home extends Component {
     const id = e.target.dataset.id
     const value = e.target.value
     if (value) return
-    let focusStatus = this.state.focusStatus
-    focusStatus[id] = false
+    let inputArr = this.state.inputArr
+    inputArr[id].focus = false
     this.setState({
-      focusStatus: focusStatus
+      inputArr: inputArr
     })
+  }
+  /**
+   * @description: ASE-256-ECB对称加密
+   * @param {*}
+   * @return {*}
+   */
+  handleEncrypt = (text, secretkey) => {
+    const keyHex = CryptoJs.enc.Base64.parse(secretkey)
+    const messageHex = CryptoJs.enc.Utf8.parse(text)
+    const encrypted = CryptoJs.AES.encrypt(messageHex, keyHex, {
+      mode: CryptoJs.mode.ECB,
+      padding: CryptoJs.pad.Pkcs7
+    })
+    return encrypted.toString()
   }
   /**
    * @description: 登录接口
@@ -73,9 +124,13 @@ class Home extends Component {
    * @return {*}
    */
   login = async () => {
-    // let res = await axios.get('http://127.0.0.1:6060/user/getAllUser ')
-    let res = await login()
-    console.log('res', res)
+    const name = this.state.inputArr[0].value
+    const password = this.state.inputArr[1].value
+    let result = await postLogin({
+      name: name,
+      password: password
+    })
+    console.log('res', result)
   }
   /**
    * @description: 注册接口
@@ -83,7 +138,17 @@ class Home extends Component {
    * @return {*}
    */
   register = async () => {
-    console.log('注册')
+    const email = this.state.inputArr[2].value
+    const name = this.state.inputArr[3].value
+    const password = this.state.inputArr[4].value
+    const secretkey = 'password'
+    const encryptPassWord = this.handleEncrypt(password, secretkey)
+    let result = await postRegister({
+      name,
+      email,
+      password: encryptPassWord
+    })
+    console.log('res', result)
   }
   /**
    * @description: 弹窗状态切换位注册状态
