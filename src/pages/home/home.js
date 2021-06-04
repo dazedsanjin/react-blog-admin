@@ -1,14 +1,15 @@
 /*
  * @Author: shaoqing
  * @Date: 2021-05-24 10:33:43
- * @LastEditTime: 2021-06-02 17:55:17
+ * @LastEditTime: 2021-06-04 18:15:30
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \react-blog-admin\src\pages\login\login.js
  */
 import React, { Component } from 'react'
-import { postLogin, postRegister } from '../../api/api'
-import CryptoJs from 'crypto-js'
+import { postLogin, postRegister, getPublicKey } from '../../api/api'
+import CryptoJS from 'crypto-js'
+import { JSEncrypt } from 'jsencrypt'
 import './home.scss'
 
 class Home extends Component {
@@ -38,8 +39,12 @@ class Home extends Component {
         }
       ],
       isRegister: false,
-      isAdd: false
+      isAdd: false,
+      publicKey: ''
     }
+  }
+  componentDidMount() {
+    this.obtainPublicKey()
   }
   /**
    * @description: 渲染input组件
@@ -105,18 +110,58 @@ class Home extends Component {
     })
   }
   /**
-   * @description: ASE-256-ECB对称加密
+   * @description: AES-256-ECB对称加密
    * @param {*}
    * @return {*}
    */
-  handleEncrypt = (text, secretkey) => {
-    const keyHex = CryptoJs.enc.Base64.parse(secretkey)
-    const messageHex = CryptoJs.enc.Utf8.parse(text)
-    const encrypted = CryptoJs.AES.encrypt(messageHex, keyHex, {
-      mode: CryptoJs.mode.ECB,
-      padding: CryptoJs.pad.Pkcs7
+  handleEncrypt = (text, secretKey) => {
+    const encrypted = CryptoJS.AES.encrypt(text, secretKey, {
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7
     })
+    console.log(encrypted, 'en')
     return encrypted.toString()
+  }
+  /**
+   * @description: RSA非对称加密
+   * @param {*} publicKey
+   * @param {*} text
+   * @return {*}
+   */
+  handleEncryptKey = (publicKey, text) => {
+    const crypt = new JSEncrypt()
+    crypt.setPublicKey(publicKey)
+    return crypt.encrypt(text)
+  }
+  /**
+   * @description: 随机生成AES secretKey
+   * @param {*}
+   * @return {*}
+   */
+  generateSecretKey = (e) => {
+    e = e || 32
+    const t = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678'
+    const a = t.length
+    let n = ''
+    for (let i = 0; i < e; i++) n += t.charAt(Math.floor(Math.random() * a))
+    return n
+  }
+  /**
+   * @description: 生成加密的key值和密码
+   * @param {*}
+   * @return {*}
+   */
+  generateEncryptParams = (password) => {
+    // 前端随机生成6位字符
+    const key = this.generateSecretKey(16)
+    // 通过RSA公钥加密key值
+    const secretkey = this.handleEncryptKey(this.state.publicKey, key)
+    const encryptPassWord = this.handleEncrypt(password, key)
+    console.log(encryptPassWord, encryptPassWord.length)
+    return {
+      secretkey,
+      encryptPassWord
+    }
   }
   /**
    * @description: 登录接口
@@ -126,11 +171,16 @@ class Home extends Component {
   login = async () => {
     const name = this.state.inputArr[0].value
     const password = this.state.inputArr[1].value
+    const { secretkey, encryptPassWord } = this.generateEncryptParams(password)
     let result = await postLogin({
       name: name,
-      password: password
+      password: encryptPassWord,
+      secretkey
     })
-    console.log('res', result)
+    if (result && result.token) {
+      const { token } = result
+      localStorage.setItem('token', token)
+    }
   }
   /**
    * @description: 注册接口
@@ -141,14 +191,23 @@ class Home extends Component {
     const email = this.state.inputArr[2].value
     const name = this.state.inputArr[3].value
     const password = this.state.inputArr[4].value
-    const secretkey = 'password'
-    const encryptPassWord = this.handleEncrypt(password, secretkey)
+    const { secretkey, encryptPassWord } = this.generateEncryptParams(password)
     let result = await postRegister({
       name,
       email,
+      secretkey,
       password: encryptPassWord
     })
-    console.log('res', result)
+    result && this.setState({ isRegister: false })
+  }
+  /**
+   * @description: 获取公钥
+   * @param {*}
+   * @return {*}
+   */
+  obtainPublicKey = async () => {
+    let result = await getPublicKey()
+    result.publicKey && this.setState({ publicKey: result.publicKey })
   }
   /**
    * @description: 弹窗状态切换位注册状态

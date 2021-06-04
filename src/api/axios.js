@@ -1,7 +1,7 @@
 /*
  * @Author: shaoqing
  * @Date: 2021-05-25 15:21:27
- * @LastEditTime: 2021-05-25 16:39:11
+ * @LastEditTime: 2021-06-04 18:20:22
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \react-blog-admin\src\api\axios.js
@@ -14,6 +14,8 @@ const axios = Axios.create({
 
 axios.interceptors.request.use(
   (request) => {
+    const token = localStorage.getItem('token')
+    request.headers['token'] = token
     return request
   },
   (error) => {
