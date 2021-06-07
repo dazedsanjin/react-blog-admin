@@ -1,7 +1,7 @@
 /*
  * @Author: shaoqing
  * @Date: 2021-06-04 13:35:10
- * @LastEditTime: 2021-06-07 18:10:51
+ * @LastEditTime: 2021-06-07 18:28:13
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \react-blog-admin\src\pages\article\article.js
@@ -9,6 +9,7 @@
 import React, { Component } from 'react'
 import markdownIt from 'markdown-it'
 import './article.scss'
+import '../../assets/gothic/gothic.css'
 const md = new markdownIt()
 class Article extends Component {
   constructor(props) {
