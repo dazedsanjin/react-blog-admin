@@ -1,7 +1,7 @@
 /*
  * @Author: shaoqing
  * @Date: 2021-05-24 10:33:43
- * @LastEditTime: 2021-06-04 18:15:30
+ * @LastEditTime: 2021-06-07 10:23:56
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \react-blog-admin\src\pages\login\login.js
@@ -119,7 +119,6 @@ class Home extends Component {
       mode: CryptoJS.mode.ECB,
       padding: CryptoJS.pad.Pkcs7
     })
-    console.log(encrypted, 'en')
     return encrypted.toString()
   }
   /**
@@ -157,7 +156,6 @@ class Home extends Component {
     // 通过RSA公钥加密key值
     const secretkey = this.handleEncryptKey(this.state.publicKey, key)
     const encryptPassWord = this.handleEncrypt(password, key)
-    console.log(encryptPassWord, encryptPassWord.length)
     return {
       secretkey,
       encryptPassWord
@@ -180,6 +178,7 @@ class Home extends Component {
     if (result && result.token) {
       const { token } = result
       localStorage.setItem('token', token)
+      this.props.history.push('/article')
     }
   }
   /**
