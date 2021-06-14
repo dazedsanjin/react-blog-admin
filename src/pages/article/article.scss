@@ -34,7 +34,14 @@
     box-sizing: border-box;
     border-bottom: 1px solid #e1e4e8;
     background-color: #fafbfc;
-    height: 33px;
+    height: 32px;
+    &-left {
+      height: 100%;
+      .icon {
+        height: 100%;
+        margin: 0 6px;
+      }
+    }
   }
   &-content {
     display: flex;

@@ -8,6 +8,7 @@
  */
 import React, { Component } from 'react'
 import markdownIt from 'markdown-it'
+import {BoldOutlined, ItalicOutlined, UnderlineOutlined, StrikethroughOutlined} from '@ant-design/icons';
 import './article.scss'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github.css'
@@ -79,6 +80,18 @@ class Article extends Component {
     const value = e.target.value
     this.setState({ parseMarkdownContent: md.render(value) })
   }
+  /**
+   * @description: 字体加粗
+   * @param {*} e
+   * @return {*}
+   */
+  handleAddBold = () => {
+    const { selectionStart, selectionEnd, value } = this.editRef.current
+    let newValue = selectionStart === selectionEnd ? value.slice(0, selectionStart) + '**加粗文字**' + value.slice(selectionEnd) :
+    value.slice(0, selectionStart) + '**' + value.slice(selectionStart, selectionEnd) + '**' + value.slice(selectionEnd)
+    this.editRef.current.value = newValue
+    this.setState({ parseMarkdownContent: md.render(newValue) })
+  }
   render() {
     return (
       <div className="article">
@@ -86,7 +99,14 @@ class Article extends Component {
           <input className="title-input" placeholder="输入文章标题..."></input>
           <div className="release-btn">发布</div>
         </div>
-        <div className="article-navbar"></div>
+        <div className="article-navbar">
+          <div className="article-navbar-left">
+            <BoldOutlined className="icon" onClick={this.handleAddBold}/>
+            <ItalicOutlined className="icon"/>
+            <UnderlineOutlined className="icon"/>
+            <StrikethroughOutlined className="icon"/>
+          </div>
+        </div>
         <div className="article-content">
           <textarea className="article-edit" ref={this.editRef} onChange={this.handleTextareaChange} onScroll={(e) => this.handleScroll('edit',e)}></textarea>
           <div className="article-preview" ref={this.previewRef} dangerouslySetInnerHTML={{ __html: this.state.parseMarkdownContent }} onScroll={(e) => this.handleScroll('preview', e)}></div>
