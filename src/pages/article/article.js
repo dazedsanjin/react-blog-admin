@@ -9,14 +9,66 @@
 import React, { Component } from 'react'
 import markdownIt from 'markdown-it'
 import './article.scss'
-import '../../assets/gothic/gothic.css'
-const md = new markdownIt()
+import hljs from 'highlight.js'
+import 'highlight.js/styles/github.css'
+import '../../assets/github.css'
+const md = new markdownIt({
+  highlight: function (str, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return '<pre class="hljs"><code>' +
+               hljs.highlight(lang, str, true).value +
+               '</code></pre>';
+      } catch (__) {}
+    }
+
+    return '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + '</code></pre>';
+  }
+})
+let scrolling = 0
+let scrollTimer
 class Article extends Component {
   constructor(props) {
     super(props)
+    this.editRef = React.createRef()
+    this.previewRef = React.createRef()
     this.state = {
       parseMarkdownContent: ''
     }
+  }
+  /**
+   * @description: 处理scroll事件
+   * @param {*} e
+   * @return {*}
+   */
+  handleScroll(type, e) {
+    const { scrollHeight, scrollTop, clientHeight } = e.target
+    const ratio  = scrollTop / (scrollHeight - clientHeight)
+
+    if(Object.is(type, 'edit')) {
+      if(scrolling === 0) scrolling = 1
+      if(scrolling === 2) return
+      this.evaluateSyncScroll(this.previewRef.current, ratio)
+    } else {
+      if(scrolling === 0) scrolling = 2
+      if(scrolling === 1) return
+      this.evaluateSyncScroll(this.editRef.current, ratio)
+    }
+  }
+  /**
+   * @description: 同步滚动
+   * @param {*} e
+   * @return {*}
+   */
+  evaluateSyncScroll(target, ratio) {
+    const { scrollHeight, clientHeight } = target
+    target.scrollTop = (scrollHeight - clientHeight) * ratio
+    
+    if(scrollTimer) clearTimeout(scrollTimer)
+    scrollTimer = setTimeout(() => {
+      scrolling = 0
+      clearTimeout(scrollTimer)  
+    }, 200)
   }
   /**
    * @description: 处理textArea Change事件
@@ -36,12 +88,8 @@ class Article extends Component {
         </div>
         <div className="article-navbar"></div>
         <div className="article-content">
-          <div className="article-edit">
-            <textarea className="textarea" onChange={this.handleTextareaChange}></textarea>
-          </div>
-          <div className="article-preview">
-            <div className="html" dangerouslySetInnerHTML={{ __html: this.state.parseMarkdownContent }}></div>
-          </div>
+          <textarea className="article-edit" ref={this.editRef} onChange={this.handleTextareaChange} onScroll={(e) => this.handleScroll('edit',e)}></textarea>
+          <div className="article-preview" ref={this.previewRef} dangerouslySetInnerHTML={{ __html: this.state.parseMarkdownContent }} onScroll={(e) => this.handleScroll('preview', e)}></div>
         </div>
       </div>
     )
