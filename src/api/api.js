@@ -13,3 +13,5 @@ export const postLogin = (data) => post('/login', data)
 export const postRegister = (data) => post('/register', data)
 // 获取服务端publickey
 export const getPublicKey = (params) => get('/publicKey', params)
+// 创建文章
+export const postCreateArticle = (data) => post('/article/create', data)

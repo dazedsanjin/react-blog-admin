@@ -9,6 +9,7 @@
 import React, { Component } from 'react'
 import markdownIt from 'markdown-it'
 import { BoldOutlined, ItalicOutlined, StrikethroughOutlined } from '@ant-design/icons'
+import { postCreateArticle } from '../../api/api'
 import './article.scss'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github.css'
@@ -32,15 +33,24 @@ class Article extends Component {
     this.editRef = React.createRef()
     this.previewRef = React.createRef()
     this.state = {
-      parseMarkdownContent: ''
+      parseMarkdownContent: '',
+      title: ''
     }
+  }
+  /**
+   * @description: 处理title Change 事件
+   * @param {*} e
+   * @return {*}
+   */
+  handleTitleChange  = (e) => {
+    this.setState({ title: e.target.value})
   }
   /**
    * @description: 处理scroll事件
    * @param {*} e
    * @return {*}
    */
-  handleScroll(type, e) {
+  handleScroll = (type, e) => {
     const { scrollHeight, scrollTop, clientHeight } = e.target
     const ratio = scrollTop / (scrollHeight - clientHeight)
 
@@ -59,7 +69,7 @@ class Article extends Component {
    * @param {*} e
    * @return {*}
    */
-  evaluateSyncScroll(target, ratio) {
+  evaluateSyncScroll = (target, ratio) => {
     const { scrollHeight, clientHeight } = target
     target.scrollTop = (scrollHeight - clientHeight) * ratio
 
@@ -83,7 +93,7 @@ class Article extends Component {
    * @param {*}
    * @return {*}
    */
-  handleText(text, symbol) {
+  handleText = (text, symbol) => {
     const { selectionStart, selectionEnd, value } = this.editRef.current
     let newValue =
       selectionStart === selectionEnd
@@ -121,12 +131,18 @@ class Article extends Component {
    * @param {*}
    * @return {*}
    */
-  releaseArticle = async () => {}
+  releaseArticle = async () => {
+    let result = await postCreateArticle({
+      title: this.state.title,
+      content: this.editRef.current.value
+    })
+    console.log('result', result)
+  }
   render() {
     return (
       <div className="article">
         <div className="article-header">
-          <input className="title-input" placeholder="输入文章标题..."></input>
+          <input className="title-input" placeholder="输入文章标题..." onChange={this.handleTitleChange}></input>
           <div className="release-btn" onClick={this.releaseArticle}>
             发布
           </div>
