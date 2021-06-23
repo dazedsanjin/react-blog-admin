@@ -1,14 +1,14 @@
 /*
  * @Author: shaoqing
  * @Date: 2021-05-25 15:21:27
- * @LastEditTime: 2021-06-04 18:20:22
+ * @LastEditTime: 2021-06-23 10:38:29
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \react-blog-admin\src\api\axios.js
  */
 import Axios from 'axios'
 const axios = Axios.create({
-  baseURL: 'http://127.0.0.1:6060',
+  baseURL: 'http://121.199.30.44:6060',
   timeout: 60000
 })
 

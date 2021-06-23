@@ -154,7 +154,9 @@
     ]
   },
   "devDependencies": {
+    "compression-webpack-plugin": "^5.0.0",
     "cross-env": "^7.0.3",
-    "node-sass": "^6.0.0"
+    "node-sass": "^6.0.0",
+    "webpack-bundle-analyzer": "^4.4.2"
   }
 }
