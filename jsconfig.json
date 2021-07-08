@@ -1,0 +1,18 @@
+/*
+ * @Author: shaoqing
+ * @Date: 2021-06-25 16:47:09
+ * @LastEditTime: 2021-06-25 17:50:17
+ * @LastEditors: Please set LastEditors
+ * @Description: 智能感知import别名导入文件
+ * @FilePath: \react-blog\.babelrc.js
+ */
+{
+    "compilerOptions": {
+        "baseUrl": "./src",
+        "paths": {
+            "@/*": ["./*"] 
+        },
+      "experimentalDecorators": true 
+    },
+    "exclude": ["node_module"]
+}

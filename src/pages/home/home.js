@@ -1,15 +1,15 @@
 /*
  * @Author: shaoqing
  * @Date: 2021-05-24 10:33:43
- * @LastEditTime: 2021-06-07 10:23:56
+ * @LastEditTime: 2021-07-08 17:35:20
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \react-blog-admin\src\pages\login\login.js
  */
 import React, { Component } from 'react'
-import { postLogin, postRegister, getPublicKey } from '../../api/api'
 import CryptoJS from 'crypto-js'
 import { JSEncrypt } from 'jsencrypt'
+import { postLogin, postRegister, getPublicKey } from '../../api/api'
 import './home.scss'
 
 class Home extends Component {
@@ -43,19 +43,20 @@ class Home extends Component {
       publicKey: ''
     }
   }
+
   componentDidMount() {
     this.obtainPublicKey()
   }
+
   /**
    * @description: 渲染input组件
    * @param {*} props
    * @return {*}
    */
-  renderInput = (label, index, isPassword) => {
-    return (
-      <div className="input">
-        <label className={`${this.state.inputArr[index].focus ? 'label active' : 'label'}`}>{label}</label>
-        <input
+  renderInput = (label, index, isPassword) => (
+    <div className="input">
+      <label className={`${this.state.inputArr[index].focus ? 'label active' : 'label'}`}>{label}</label>
+      <input
           type={isPassword ? 'password' : 'text'}
           autoComplete="false"
           onFocus={this.handleInputFocus}
@@ -64,23 +65,24 @@ class Home extends Component {
             this.handleInputChange(index, e)
           }}
           data-id={index}
-        ></input>
-        <span className={`${this.state.inputArr[index].focus ? 'progress active' : 'progress'}`}></span>
-      </div>
-    )
-  }
+      ></input>
+      <span className={`${this.state.inputArr[index].focus ? 'progress active' : 'progress'}`}></span>
+    </div>
+  )
+
   /**
    * @description: 处理Input Change事件
    * @param {*} e
    * @return {*}
    */
   handleInputChange = (index, e) => {
-    let inputArr = this.state.inputArr
+    const inputArr = this.state.inputArr
     inputArr[index].value = e.target.value
     this.setState({
-      inputArr: inputArr
+      inputArr
     })
   }
+
   /**
    * @description: 处理input聚焦事件
    * @param {*} e
@@ -88,12 +90,13 @@ class Home extends Component {
    */
   handleInputFocus = (e) => {
     const id = e.target.dataset.id
-    let inputArr = this.state.inputArr
+    const inputArr = this.state.inputArr
     inputArr[id].focus = true
     this.setState({
-      inputArr: inputArr
+      inputArr
     })
   }
+
   /**
    * @description: 处理input失焦事件
    * @param {*} e
@@ -103,12 +106,13 @@ class Home extends Component {
     const id = e.target.dataset.id
     const value = e.target.value
     if (value) return
-    let inputArr = this.state.inputArr
+    const inputArr = this.state.inputArr
     inputArr[id].focus = false
     this.setState({
-      inputArr: inputArr
+      inputArr
     })
   }
+
   /**
    * @description: AES-256-ECB对称加密
    * @param {*}
@@ -121,6 +125,7 @@ class Home extends Component {
     })
     return encrypted.toString()
   }
+
   /**
    * @description: RSA非对称加密
    * @param {*} publicKey
@@ -132,6 +137,7 @@ class Home extends Component {
     crypt.setPublicKey(publicKey)
     return crypt.encrypt(text)
   }
+
   /**
    * @description: 随机生成AES secretKey
    * @param {*}
@@ -145,6 +151,7 @@ class Home extends Component {
     for (let i = 0; i < e; i++) n += t.charAt(Math.floor(Math.random() * a))
     return n
   }
+
   /**
    * @description: 生成加密的key值和密码
    * @param {*}
@@ -161,6 +168,7 @@ class Home extends Component {
       encryptPassWord
     }
   }
+
   /**
    * @description: 登录接口
    * @param {*}
@@ -170,8 +178,8 @@ class Home extends Component {
     const name = this.state.inputArr[0].value
     const password = this.state.inputArr[1].value
     const { secretkey, encryptPassWord } = this.generateEncryptParams(password)
-    let result = await postLogin({
-      name: name,
+    const result = await postLogin({
+      name,
       password: encryptPassWord,
       secretkey
     })
@@ -181,6 +189,7 @@ class Home extends Component {
       this.props.history.push('/article')
     }
   }
+
   /**
    * @description: 注册接口
    * @param {*}
@@ -191,7 +200,7 @@ class Home extends Component {
     const name = this.state.inputArr[3].value
     const password = this.state.inputArr[4].value
     const { secretkey, encryptPassWord } = this.generateEncryptParams(password)
-    let result = await postRegister({
+    const result = await postRegister({
       name,
       email,
       secretkey,
@@ -199,15 +208,17 @@ class Home extends Component {
     })
     result && this.setState({ isRegister: false })
   }
+
   /**
    * @description: 获取公钥
    * @param {*}
    * @return {*}
    */
   obtainPublicKey = async () => {
-    let result = await getPublicKey()
+    const result = await getPublicKey()
     result.publicKey && this.setState({ publicKey: result.publicKey })
   }
+
   /**
    * @description: 弹窗状态切换位注册状态
    * @param {*}
@@ -217,6 +228,7 @@ class Home extends Component {
     const isRegister = this.state.isRegister
     this.setState({ isRegister: !isRegister })
   }
+
   render() {
     return (
       <div className="home">

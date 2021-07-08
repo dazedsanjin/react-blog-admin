@@ -1,55 +1,35 @@
-'use strict'
-
+/*
+ * @Author: shaoqing
+ * @Date: 2021-06-25 10:32:28
+ * @LastEditTime: 2021-06-25 18:06:08
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \react-blog\config\paths.js
+ */
 const path = require('path')
 const fs = require('fs')
-const getPublicUrlOrPath = require('react-dev-utils/getPublicUrlOrPath')
 
-// Make sure any symlinks in the project folder are resolved:
-// https://github.com/facebook/create-react-app/issues/637
+// 获取当前工作目录
 const appDirectory = fs.realpathSync(process.cwd())
+// 从相对路径中解析绝对路径
 const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath)
-
-// We use `PUBLIC_URL` environment variable or "homepage" field to infer
-// "public path" at which the app is served.
-// webpack needs to know it to put the right <script> hrefs into HTML even in
-// single-page apps that may serve index.html for nested URLs like /todos/42.
-// We can't use a relative path in HTML because we don't want to load something
-// like /todos/42/static/js/bundle.7289d.js. We have to know the root.
-const publicUrlOrPath = getPublicUrlOrPath(process.env.NODE_ENV === 'development', require(resolveApp('package.json')).homepage, process.env.PUBLIC_URL)
-
-const buildPath = process.env.BUILD_PATH || 'react-blog-admin'
-
-const moduleFileExtensions = ['web.mjs', 'mjs', 'web.js', 'js', 'web.ts', 'ts', 'web.tsx', 'tsx', 'json', 'web.jsx', 'jsx']
-
-// Resolve file paths in the same order as webpack
+// 默认的模块扩展名
+const moduleFileExtensions = ['js', 'jsx', 'ts', 'tsx', 'json']
+// 解析模块路径
 const resolveModule = (resolveFn, filePath) => {
-  const extension = moduleFileExtensions.find((extension) => fs.existsSync(resolveFn(`${filePath}.${extension}`)))
-
+  // 查看文件存不存在
+  const extension = moduleFileExtensions.find((suffix) => fs.existsSync(resolveFn(`${filePath}.${suffix}`)))
   if (extension) {
     return resolveFn(`${filePath}.${extension}`)
   }
-
   return resolveFn(`${filePath}.js`)
 }
 
-// config after eject: we're in ./config/
 module.exports = {
-  dotenv: resolveApp('.env'),
-  appPath: resolveApp('.'),
-  appBuild: resolveApp(buildPath),
-  appPublic: resolveApp('public'),
-  appHtml: resolveApp('public/index.html'),
-  appIndexJs: resolveModule(resolveApp, 'src/index'),
-  appPackageJson: resolveApp('package.json'),
-  appSrc: resolveApp('src'),
-  appTsConfig: resolveApp('tsconfig.json'),
-  appJsConfig: resolveApp('jsconfig.json'),
-  yarnLockFile: resolveApp('yarn.lock'),
-  testsSetup: resolveModule(resolveApp, 'src/setupTests'),
-  proxySetup: resolveApp('src/setupProxy.js'),
-  appNodeModules: resolveApp('node_modules'),
-  swSrc: resolveModule(resolveApp, 'src/service-worker'),
-  publicUrlOrPath
+  appBuild: resolveApp('build'), // 打包路径
+  appPublic: resolveApp('public'), // 静态资源路径
+  appHtml: resolveApp('public/index.html'), // html 模板路径
+  appIndexJs: resolveModule(resolveApp, 'src/index'), // 打包入口路径
+  appNodeModules: resolveApp('node_modules'), // node_modules 路径
+  appSrc: resolveApp('src') // 主文件入口路径
 }
-
-module.exports.moduleFileExtensions = moduleFileExtensions

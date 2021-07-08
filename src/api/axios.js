@@ -7,6 +7,7 @@
  * @FilePath: \react-blog-admin\src\api\axios.js
  */
 import Axios from 'axios'
+
 const axios = Axios.create({
   baseURL: 'http://121.199.30.44:6060',
   timeout: 60000
@@ -15,12 +16,10 @@ const axios = Axios.create({
 axios.interceptors.request.use(
   (request) => {
     const token = localStorage.getItem('token')
-    request.headers['token'] = token
+    request.headers.token = token
     return request
   },
-  (error) => {
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(error)
 )
 
 axios.interceptors.response.use(

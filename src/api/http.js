@@ -8,18 +8,14 @@
  */
 import axios from './axios'
 
-export const get = (url, params) => {
-  return axios({
-    url: url,
-    method: 'get',
-    params
-  })
-}
+export const get = (url, params) => axios({
+  url,
+  method: 'get',
+  params
+})
 
-export const post = (url, data) => {
-  return axios({
-    url: url,
-    method: 'post',
-    data
-  })
-}
+export const post = (url, data) => axios({
+  url,
+  method: 'post',
+  data
+})

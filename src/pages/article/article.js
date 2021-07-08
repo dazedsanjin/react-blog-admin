@@ -1,28 +1,31 @@
 /*
  * @Author: shaoqing
  * @Date: 2021-06-04 13:35:10
- * @LastEditTime: 2021-06-15 10:17:38
+ * @LastEditTime: 2021-07-08 17:34:25
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \react-blog-admin\src\pages\article\article.js
  */
 import React, { Component } from 'react'
-import markdownIt from 'markdown-it'
+import MarkdownIt from 'markdown-it'
 import { BoldOutlined, ItalicOutlined, StrikethroughOutlined } from '@ant-design/icons'
-import { postCreateArticle } from '../../api/api'
 import './article.scss'
 import hljs from 'highlight.js'
+import { postCreateArticle } from '../../api/api'
 import 'highlight.js/styles/github.css'
 import '../../assets/github.css'
-const md = new markdownIt({
-  highlight: function (str, lang) {
+
+const md = new MarkdownIt({
+  highlight(str, lang) {
     if (lang && hljs.getLanguage(lang)) {
       try {
-        return '<pre class="hljs"><code>' + hljs.highlight(lang, str, true).value + '</code></pre>'
-      } catch (__) {}
+        return `<pre class="hljs"><code>${hljs.highlight(lang, str, true).value}</code></pre>`
+      } catch (__) {
+        return
+      }
     }
 
-    return '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + '</code></pre>'
+    return `<pre class="hljs"><code>${md.utils.escapeHtml(str)}</code></pre>`
   }
 })
 let scrolling = 0
@@ -37,14 +40,16 @@ class Article extends Component {
       title: ''
     }
   }
+
   /**
    * @description: 处理title Change 事件
    * @param {*} e
    * @return {*}
    */
-  handleTitleChange  = (e) => {
-    this.setState({ title: e.target.value})
+  handleTitleChange = (e) => {
+    this.setState({ title: e.target.value })
   }
+
   /**
    * @description: 处理scroll事件
    * @param {*} e
@@ -64,6 +69,7 @@ class Article extends Component {
       this.evaluateSyncScroll(this.editRef.current, ratio)
     }
   }
+
   /**
    * @description: 同步滚动
    * @param {*} e
@@ -79,6 +85,7 @@ class Article extends Component {
       clearTimeout(scrollTimer)
     }, 200)
   }
+
   /**
    * @description: 处理textArea Change事件
    * @param {*} e
@@ -88,6 +95,7 @@ class Article extends Component {
     const value = e.target.value
     this.setState({ parseMarkdownContent: md.render(value) })
   }
+
   /**
    * @description: 处理文字
    * @param {*}
@@ -95,13 +103,13 @@ class Article extends Component {
    */
   handleText = (text, symbol) => {
     const { selectionStart, selectionEnd, value } = this.editRef.current
-    let newValue =
-      selectionStart === selectionEnd
-        ? value.slice(0, selectionStart) + symbol + text + symbol + value.slice(selectionEnd)
-        : value.slice(0, selectionStart) + symbol + value.slice(selectionStart, selectionEnd) + symbol + value.slice(selectionEnd)
+    const newValue = selectionStart === selectionEnd
+      ? value.slice(0, selectionStart) + symbol + text + symbol + value.slice(selectionEnd)
+      : value.slice(0, selectionStart) + symbol + value.slice(selectionStart, selectionEnd) + symbol + value.slice(selectionEnd)
     this.editRef.current.value = newValue
     this.setState({ parseMarkdownContent: md.render(newValue) })
   }
+
   /**
    * @description: 字体加粗
    * @param {*} e
@@ -110,6 +118,7 @@ class Article extends Component {
   handleAddBold = () => {
     this.handleText('加粗文字', '**')
   }
+
   /**
    * @description: 字体斜体
    * @param {*}
@@ -118,6 +127,7 @@ class Article extends Component {
   handleAddItalic = () => {
     this.handleText('斜体文字', '*')
   }
+
   /**
    * @description: 字体删除
    * @param {*}
@@ -126,18 +136,20 @@ class Article extends Component {
   handleAddOutlined = () => {
     this.handleText('删除文字', '~~')
   }
+
   /**
    * @description: 发布文章
    * @param {*}
    * @return {*}
    */
   releaseArticle = async () => {
-    let result = await postCreateArticle({
+    const result = await postCreateArticle({
       title: this.state.title,
       content: this.editRef.current.value
     })
     console.log('result', result)
   }
+
   render() {
     return (
       <div className="article">
@@ -157,10 +169,10 @@ class Article extends Component {
         <div className="article-content">
           <textarea className="article-edit" ref={this.editRef} onChange={this.handleTextareaChange} onScroll={(e) => this.handleScroll('edit', e)}></textarea>
           <div
-            className="article-preview"
-            ref={this.previewRef}
-            dangerouslySetInnerHTML={{ __html: this.state.parseMarkdownContent }}
-            onScroll={(e) => this.handleScroll('preview', e)}
+              className="article-preview"
+              ref={this.previewRef}
+              dangerouslySetInnerHTML={{ __html: this.state.parseMarkdownContent }}
+              onScroll={(e) => this.handleScroll('preview', e)}
           ></div>
         </div>
       </div>
