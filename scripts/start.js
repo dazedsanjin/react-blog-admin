@@ -1,7 +1,7 @@
 /*
  * @Author: shaoqing
  * @Date: 2021-06-25 13:16:26
- * @LastEditTime: 2021-07-05 17:41:37
+ * @LastEditTime: 2021-07-12 23:00:32
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \react-blog\scripts\start.js
@@ -14,7 +14,7 @@ const WebpackConfig = require('../config/webpack.dev')
 
 // 本地服务配置
 const config = {
-  port: 8080,
+  port: 8081,
   host: 'localhost'
 }
 
@@ -32,7 +32,10 @@ const logger = {
     console.log(`${chalk.bold('Access URLs:')}
     ${divider}
     Localhost:${chalk.magenta(`http://${host}:${port}`)}
-    LAN: ${chalk.magenta(`http://${ip.address()}:${port}`) + (tunnelStarted ? `Proxy: ${chalk.magenta(tunnelStarted)}` : '')}
+    LAN: ${
+      chalk.magenta(`http://${ip.address()}:${port}`) +
+      (tunnelStarted ? `Proxy: ${chalk.magenta(tunnelStarted)}` : '')
+    }
     ${divider}
     ${chalk.blue(`Press ${chalk.italic('CTRL-C')} to stop`)}
     `)

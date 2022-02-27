@@ -55,18 +55,28 @@ class Home extends Component {
    */
   renderInput = (label, index, isPassword) => (
     <div className="input">
-      <label className={`${this.state.inputArr[index].focus ? 'label active' : 'label'}`}>{label}</label>
+      <label
+        className={`${
+          this.state.inputArr[index].focus ? 'label active' : 'label'
+        }`}
+      >
+        {label}
+      </label>
       <input
-          type={isPassword ? 'password' : 'text'}
-          autoComplete="false"
-          onFocus={this.handleInputFocus}
-          onBlur={this.handleInputBlur}
-          onChange={(e) => {
-            this.handleInputChange(index, e)
-          }}
-          data-id={index}
+        type={isPassword ? 'password' : 'text'}
+        autoComplete="false"
+        onFocus={this.handleInputFocus}
+        onBlur={this.handleInputBlur}
+        onChange={(e) => {
+          this.handleInputChange(index, e)
+        }}
+        data-id={index}
       ></input>
-      <span className={`${this.state.inputArr[index].focus ? 'progress active' : 'progress'}`}></span>
+      <span
+        className={`${
+          this.state.inputArr[index].focus ? 'progress active' : 'progress'
+        }`}
+      ></span>
     </div>
   )
 
@@ -245,7 +255,11 @@ class Home extends Component {
               </button>
             </div>
           </div>
-          <div className={`${this.state.isRegister ? 'active register' : 'register'}`}>
+          <div
+            className={`${
+              this.state.isRegister ? 'active register' : 'register'
+            }`}
+          >
             <div className="add">
               <span className="shape" onClick={this.goToRegister}></span>
             </div>
